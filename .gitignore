@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# IPython
+.ipynb_checkpoints/
+
+# Distribution / packaging / data
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg/
+
+# DS Store
+.DS_Store
+
+# Testing
+.coverage
+htmlcov
+
+# Private configs
+config.yml
+
+# Logs / metastore database
+*.log
+metastore_db/
