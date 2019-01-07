@@ -109,4 +109,4 @@ def run_listener(search, secrets):
 
 if __name__ == "__main__":
     USER, SECRETS, SEARCH = load_yaml(sys.argv[1])
-    run_listener(SECRETS, SEARCH)
+    run_listener(SEARCH, SECRETS)
