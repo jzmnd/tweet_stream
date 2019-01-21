@@ -4,6 +4,8 @@
 twitter_app.py
 Streams twitter data from the API using tweepy and sends data to socket.
 
+To run use `python twitter_app.py config.yml`
+
 Attributes:
     HOST (str): Host name for stream service
     PORT (int): Port for stream service
