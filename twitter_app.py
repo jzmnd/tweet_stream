@@ -20,8 +20,8 @@ from tweepy import Stream
 from tweepy.streaming import StreamListener
 
 
-HOST = 'localhost'
-PORT = 5055             # Reserve a port for your service
+HOST = "localhost"
+PORT = 5055  # Reserve a port for your service
 logging.basicConfig(level=logging.INFO)
 
 
@@ -34,9 +34,9 @@ def load_yaml(filename):
     Returns:
         dict: Config dictionary
     """
-    with open(filename, 'r') as file:
-        data = yaml.load(file)
-    return data['user'], data['secrets'], data['search']
+    with open(filename, "r") as file:
+        data = yaml.safe_load(file)
+    return data["user"], data["secrets"], data["search"]
 
 
 class TweetsListener(StreamListener):
@@ -57,7 +57,7 @@ class TweetsListener(StreamListener):
             raw_data (bytes): Raw data stream from Twitter API
         """
         try:
-            self.client_socket.send(raw_data.encode('utf-8'))
+            self.client_socket.send(raw_data.encode("utf-8"))
         except BaseException as exception:
             logging.error("Error on_data: %s", exception)
 
@@ -80,13 +80,11 @@ def send_data(client_socket, search, secrets):
         search (dict): Search info dicitonary
         secrets (dict): API credentials dicitonary
     """
-    auth = OAuthHandler(secrets['consumer_key'],
-                        secrets['consumer_secret'])
-    auth.set_access_token(secrets['access_token'],
-                          secrets['access_secret'])
+    auth = OAuthHandler(secrets["consumer_key"], secrets["consumer_secret"])
+    auth.set_access_token(secrets["access_token"], secrets["access_secret"])
 
     twitter_stream = Stream(auth=auth, listener=TweetsListener(client_socket))
-    twitter_stream.filter(track=search['track'], languages=search['languages'])
+    twitter_stream.filter(track=search["track"], languages=search["languages"])
 
 
 def run_listener(search, secrets):
@@ -96,13 +94,13 @@ def run_listener(search, secrets):
         search (dict): Search info dicitonary
         secrets (dict): API credentials dicitonary
     """
-    sock = socket.socket()     # Create a socket object
-    sock.bind((HOST, PORT))    # Bind to the port
+    sock = socket.socket()  # Create a socket object
+    sock.bind((HOST, PORT))  # Bind to the port
 
     logging.info("Listening on port: %i", PORT)
 
-    sock.listen(1)                    # Now wait for client connection
-    conn, addr = sock.accept()        # Establish connection with client
+    sock.listen(1)  # Now wait for client connection
+    conn, addr = sock.accept()  # Establish connection with client
 
     logging.info("Received request from: %s", str(addr))
 
