@@ -13,6 +13,7 @@ Attributes:
 import sys
 import socket
 import logging
+from typing import Tuple
 
 import yaml
 from tweepy import OAuthHandler
@@ -25,14 +26,14 @@ PORT = 5055  # Reserve a port for your service
 logging.basicConfig(level=logging.INFO)
 
 
-def load_yaml(filename):
+def load_yaml(filename: str) -> Tuple[dict, dict, dict]:
     """Load yaml config file with the authentication credentials and search terms
 
     Args:
-        filename (str): Config file pathname
+        filename: Config file pathname
 
     Returns:
-        dict: Config dictionary
+        Config dictionaries for user, secrets and search
     """
     with open(filename, "r") as file:
         data = yaml.safe_load(file)
@@ -43,25 +44,25 @@ class TweetsListener(StreamListener):
     """Tweepy listener class that inherits from the StreamListener
 
     Attributes:
-        client_socket (TYPE): Description
+        client_socket: Client socket
     """
 
     def __init__(self, client_socket):
         super().__init__()
         self.client_socket = client_socket
 
-    def on_data(self, raw_data):
+    def on_data(self, raw_data: bytes):
         """Called when raw data is received from the connection
 
         Args:
-            raw_data (bytes): Raw data stream from Twitter API
+            raw_data: Raw data stream from Twitter API
         """
         try:
             self.client_socket.send(raw_data.encode("utf-8"))
         except BaseException as exception:
             logging.error("Error on_data: %s", exception)
 
-    def on_error(self, status_code):
+    def on_error(self, status_code: int):
         logging.error("Server error: %i", status_code)
         if status_code == 420:
             # returning False in on_data disconnects the stream in case of API limit
@@ -72,13 +73,13 @@ class TweetsListener(StreamListener):
         logging.error("Exception: %s", exception)
 
 
-def send_data(client_socket, search, secrets):
+def send_data(client_socket, search: dict, secrets: dict):
     """Creates the stream with authentication and filters the data based on `track`
 
     Args:
-        client_socket (TYPE): Client socket
-        search (dict): Search info dicitonary
-        secrets (dict): API credentials dicitonary
+        client_socket: Client socket
+        search: Search info dicitonary
+        secrets: API credentials dicitonary
     """
     auth = OAuthHandler(secrets["consumer_key"], secrets["consumer_secret"])
     auth.set_access_token(secrets["access_token"], secrets["access_secret"])
@@ -87,12 +88,12 @@ def send_data(client_socket, search, secrets):
     twitter_stream.filter(track=search["track"], languages=search["languages"])
 
 
-def run_listener(search, secrets):
+def run_listener(search: dict, secrets: dict):
     """Run the tweet listener
 
     Args:
-        search (dict): Search info dicitonary
-        secrets (dict): API credentials dicitonary
+        search: Search info dicitonary
+        secrets: API credentials dicitonary
     """
     sock = socket.socket()  # Create a socket object
     sock.bind((HOST, PORT))  # Bind to the port
